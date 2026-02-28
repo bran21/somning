@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>A Safe dashboard for you</title>
+    <meta name="description"
+        content="Real-time Somnia Testnet wallet dashboard with reactive event streaming, portfolio tracking, and network stats." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet" />
+    <link rel="icon" type="image/png"
+        href="https://blush-naval-bat-99.mypinata.cloud/ipfs/bafkreidyt7tabkeldntzwdsrlqtkcngi6sq3a2k5hz6bi57in2yrgnjnqe" />
+    <link rel="stylesheet" href="/src/style.css" />
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>Somnia Ecosystem</h3>
+            <button class="sidebar-close" id="sidebarClose">✕</button>
+        </div>
+        <div class="sidebar-content">
+            <div id="ecosystemListContainer"></div>
+
+            <!-- Minigames -->
+            <div class="sidebar-category">
+                <div class="category-title">🎮 Minigames</div>
+                <a href="#" class="sidebar-item" id="navTicTacToe">
+                    <span class="si-icon">⚔️</span><span class="si-name">Tic Tac Toe</span><span class="si-tag">PvP
+                        On-chain</span>
+                </a>
+            </div>
+        </div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Header -->
+    <header id="header">
+        <div class="header-left">
+            <button class="sidebar-toggle" id="sidebarToggle" title="Ecosystem">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12" />
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <line x1="3" y1="18" x2="21" y2="18" />
+                </svg>
+            </button>
+            <div class="logo">
+                <img src="https://1813806305-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/organizations%2FXixzx30CXHthiaKhEu1D%2Fsites%2Fsite_m7x2t%2Ficon%2FjdslfIGTxvTkjBH77O7V%2Flogo.png?alt=media&token=fbc7ca1b-24b9-4847-ad0c-574ac536eff3"
+                    alt="Somnia" class="logo-icon-img" />
+                <div class="logo-text">
+                    <span class="logo-title">Powered By Somnia</span>
+                    <span class="logo-subtitle">Reactivity</span>
+                </div>
+            </div>
+        </div>
+        <div class="header-center">
+            <div class="network-badge" id="networkBadge">
+                <span class="badge-dot"></span>
+                <span>Testnet</span>
+                <span class="badge-chain">50312</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <button id="themeToggleBtn" class="theme-toggle" title="Toggle Theme">
+                <svg class="theme-icon-dark" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+                <svg class="theme-icon-light" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </button>
+            <button id="connectBtn" class="connect-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4" />
+                    <path d="M4 6v12c0 1.1.9 2 2 2h14v-4" />
+                    <circle cx="18" cy="16" r="2" />
+                </svg>
+                <span>Connect Wallet</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main id="dashboard">
+        <!-- Portfolio Overview Row -->
+        <section class="portfolio-row">
+            <div class="card card-portfolio" id="portfolioCard">
+                <div class="card-header">
+                    <h2>Wallet Overview</h2>
+                    <span class="card-badge">STT</span>
+                </div>
+                <div class="portfolio-content">
+                    <div class="balances-wrapper"
+                        style="display: flex; flex-wrap: wrap; gap: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px;">
+                        <div class="balance-group" style="flex: 1; min-width: 200px;">
+                            <div class="balance-display">
+                                <span class="balance-label">Total Balance</span>
+                                <span class="balance-amount" id="balanceAmount">—</span>
+                                <span class="balance-usd" id="balanceUsd">Connect wallet to view</span>
+                            </div>
+                            <div class="wallet-actions" id="walletActions" style="display:none; margin-top: 16px;">
+                                <button class="action-btn action-send" id="sendBtn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="12" y1="19" x2="12" y2="5" />
+                                        <polyline points="5 12 12 5 19 12" />
+                                    </svg>
+                                    <span>Send</span>
+                                </button>
+                                <button class="action-btn action-receive" id="receiveBtn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="12" y1="5" x2="12" y2="19" />
+                                        <polyline points="19 12 12 19 5 12" />
+                                    </svg>
+                                    <span>Receive</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="staking-group"
+                            style="flex: 1; min-width: 200px; border-left: 1px solid var(--border-color); padding-left: 24px;">
+                            <div class="balance-display">
+                                <span class="balance-label">Staked Amount</span>
+                                <span class="balance-amount" id="stakedAmount">—</span>
+                                <span class="balance-usd" id="stakedUsd">Stake STT to earn rewards</span>
+                            </div>
+                            <div class="wallet-actions" id="stakingActions" style="display:none; margin-top: 16px;">
+                                <a href="https://testnet.somnia.network/staking" target="_blank"
+                                    class="action-btn action-stake" id="stakeBtn"
+                                    style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                    </svg>
+                                    <span>Manage Staking</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="wallet-info">
+                    <div class="wallet-address-row">
+                        <span class="wallet-label">Address</span>
+                        <div class="wallet-address-wrapper">
+                            <span class="wallet-address" id="walletAddress">Not connected</span>
+                            <button class="copy-btn" id="copyAddressBtn" title="Copy address" style="display:none;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" />
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <a href="#" id="explorerLink" class="explorer-link" target="_blank" style="display:none;">
+                        View on Explorer
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                            <polyline points="15 3 21 3 21 9" />
+                            <line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            </div>
+
+            <div class="card card-stats" id="networkCard">
+                <div class="card-header">
+                    <h2>Network Stats</h2>
+                    <div class="live-indicator" id="networkLive">
+                        <span class="live-dot"></span>
+                        <span>Live</span>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">Block Height</span>
+                        <span class="stat-value" id="blockHeight">—</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Gas Price</span>
+                        <span class="stat-value" id="gasPrice">—</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Chain ID</span>
+                        <span class="stat-value" id="chainId">50312</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Network</span>
+                        <span class="stat-value" id="networkName">Somnia Testnet</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reactivity + Transactions Row -->
+        <section class="main-row">
+            <!-- Reactivity Feed -->
+            <div class="card card-reactivity" id="reactivityCard">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <h2>⚡ Somnia Reactivity</h2>
+                        <span class="card-description">Real-time on-chain event stream</span>
+                    </div>
+                    <div class="card-header-right">
+                        <div class="ws-status" id="wsStatus">
+                            <span class="ws-dot ws-disconnected"></span>
+                            <span id="wsStatusText">Disconnected</span>
+                        </div>
+                        <div class="reactivity-controls">
+                            <button class="control-btn" id="pauseBtn" title="Pause feed">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="6" y="4" width="4" height="16" />
+                                    <rect x="14" y="4" width="4" height="16" />
+                                </svg>
+                            </button>
+                            <button class="control-btn" id="clearBtn" title="Clear feed">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6" />
+                                    <path
+                                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="reactivity-filters">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="block">Blocks</button>
+                    <button class="filter-btn" data-filter="tx">Transactions</button>
+                    <button class="filter-btn" data-filter="log">Logs</button>
+                    <button class="filter-btn" data-filter="action_send"
+                        style="color:#10b981; border-color:rgba(16, 185, 129, 0.4);">Send</button>
+                    <button class="filter-btn" data-filter="action_swap"
+                        style="color:#3b82f6; border-color:rgba(59, 130, 246, 0.4);">Swap</button>
+                    <button class="filter-btn" data-filter="action_stake"
+                        style="color:#8b5cf6; border-color:rgba(139, 92, 246, 0.4);">Stake</button>
+                </div>
+                <div class="reactivity-feed" id="reactivityFeed">
+                    <div class="feed-empty">
+                        <div class="feed-empty-icon">⚡</div>
+                        <p>Connecting to Somnia Reactivity...</p>
+                        <p class="feed-empty-sub">Real-time events will appear here</p>
+                    </div>
+                </div>
+                <div class="reactivity-footer">
+                    <span id="eventCount">0 events</span>
+                    <span id="eventsPerSec">0 evt/s</span>
+                </div>
+            </div>
+
+            <!-- Transaction History -->
+            <div class="card card-transactions" id="transactionsCard">
+                <div class="card-header">
+                    <h2>Transaction History</h2>
+                    <button class="refresh-btn" id="refreshTxBtn" title="Refresh">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="23 4 23 10 17 10" />
+                            <polyline points="1 20 1 14 7 14" />
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="tx-list" id="txList">
+                    <div class="tx-empty">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5" opacity="0.3">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                        </svg>
+                        <p>Connect wallet to view transactions</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Wallet Watcher + NFT Portfolio Row -->
+        <section class="main-row">
+            <!-- Wallet Watcher -->
+            <div class="card card-watcher" id="watcherCard">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <h2>Wallet Tracker</h2>
+                        <span class="card-description">Track any address on Somnia</span>
+                    </div>
+                </div>
+                <div class="watcher-input-row">
+                    <input type="text" id="watcherInput" placeholder="Enter wallet address (0x...)" autocomplete="off"
+                        spellcheck="false" />
+                    <button class="watcher-add-btn" id="watcherAddBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Watch
+                    </button>
+                </div>
+                <div class="watcher-list" id="watcherList">
+                    <div class="watcher-empty">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5" opacity="0.3">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M12 8v4M12 16h.01" />
+                        </svg>
+                        <p>No wallets being watched</p>
+                        <p class="watcher-empty-sub">Add an address above to start tracking</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NFT Portfolio -->
+            <div class="card card-nfts" id="nftCard">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <h2>🖼️ NFT Portfolio</h2>
+                        <span class="card-description" id="nftCount">0 NFTs</span>
+                    </div>
+                    <div class="nft-search-wrapper">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="mainNftSearch" placeholder="Search NFTs..." class="nft-search-input"
+                            autocomplete="off" />
+                    </div>
+                    <button class="action-btn action-receive" id="receiveNftBtn"
+                        style="padding: 6px 12px; margin-right: 8px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <polyline points="19 12 12 19 5 12" />
+                        </svg>
+                        <span>Receive</span>
+                    </button>
+                    <button class="refresh-btn" id="refreshNftBtn" title="Refresh NFTs">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="23 4 23 10 17 10" />
+                            <polyline points="1 20 1 14 7 14" />
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="nft-grid" id="nftGrid">
+                    <div class="nft-empty">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5" opacity="0.3">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                        </svg>
+                        <p>Connect wallet to view NFTs</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Minigames Row -->
+        <section class="main-row">
+            <div class="card card-minigames" id="minigamesCard">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <h2>🎮 Minigames</h2>
+                        <span class="card-description">Play on-chain PvP games</span>
+                    </div>
+                </div>
+                <div class="minigames-grid"
+                    style="padding: 16px; display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
+
+                    <div class="minigame-item" id="openTicTacToeCard"
+                        style="background: var(--bg-glass); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; cursor: pointer; transition: all var(--transition-fast); text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 12px;">⚔️</div>
+                        <h3 style="margin-bottom: 8px; font-size: 1.1rem;">Tic Tac Toe</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Wager STT in a
+                            classic 1v1 on-chain battle.</p>
+                        <button class="action-btn" style="width: 100%; justify-content: center;">Play Now</button>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Send Modal -->
+    <div class="modal-overlay" id="sendModalOverlay">
+        <div class="modal" id="sendModal">
+            <div class="modal-header">
+                <h3>Send STT</h3>
+                <button class="modal-close" id="sendModalClose">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-field">
+                    <label for="sendTo">Recipient Address</label>
+                    <input type="text" id="sendTo" placeholder="0x..." autocomplete="off" spellcheck="false" />
+                </div>
+                <div class="modal-field">
+                    <label for="sendAmount">Amount (STT)</label>
+                    <div class="amount-input-wrapper">
+                        <input type="number" id="sendAmount" placeholder="0.0" min="0" step="any" />
+                        <button class="max-btn" id="sendMaxBtn">MAX</button>
+                    </div>
+                </div>
+                <div class="modal-info" id="sendInfo">
+                    <div class="info-row">
+                        <span>Available Balance</span>
+                        <span id="sendBalance">—</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Estimated Gas</span>
+                        <span id="sendGas">~0.0001 STT</span>
+                    </div>
+                </div>
+                <div class="modal-consent">
+                    <input type="checkbox" id="sendConsent" />
+                    <label for="sendConsent">I confirm that the recipient address is correct. STT transactions cannot be
+                        reversed.</label>
+                </div>
+                <div class="modal-error" id="sendError" style="display:none;"></div>
+                <button class="modal-submit" id="sendSubmitBtn" disabled>Send STT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receive Modal -->
+    <div class="modal-overlay" id="receiveModalOverlay">
+        <div class="modal" id="receiveModal">
+            <div class="modal-header">
+                <h3>Receive Assets</h3>
+                <button class="modal-close" id="receiveModalClose">✕</button>
+            </div>
+            <div class="modal-body">
+                <p class="receive-hint">Share your address to receive STT or NFTs on Somnia Testnet</p>
+                <div class="receive-address-box">
+                    <div class="receive-address-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4" />
+                            <path d="M4 6v12c0 1.1.9 2 2 2h14v-4" />
+                            <circle cx="18" cy="16" r="2" />
+                        </svg>
+                    </div>
+                    <span class="receive-network">Somnia Testnet</span>
+                    <span class="receive-address" id="receiveAddress">—</span>
+                    <button class="copy-address-btn" id="receiveCopyBtn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" />
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                        </svg>
+                        <span>Copy Address</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NFT Send Modal -->
+    <div class="modal-overlay" id="nftSendModalOverlay">
+        <div class="modal" id="nftSendModal">
+            <div class="modal-header">
+                <h3>Send NFT</h3>
+                <button class="modal-close" id="nftSendModalClose">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="nft-send-preview" id="nftSendPreview">
+                    <div class="nft-send-img-container">
+                        <img src="" alt="NFT" id="nftSendImg" style="display:none;" />
+                        <div class="nft-placeholder" id="nftSendPlaceholder">🖼️</div>
+                    </div>
+                    <div class="nft-send-info">
+                        <h4 id="nftSendName">—</h4>
+                        <span id="nftSendCollection">—</span>
+                        <span class="nft-id" id="nftSendId">#—</span>
+                    </div>
+                </div>
+
+                <div class="modal-field">
+                    <label for="nftSendTo">Recipient Address</label>
+                    <input type="text" id="nftSendTo" placeholder="0x..." autocomplete="off" spellcheck="false" />
+                </div>
+
+                <div class="modal-field" id="nftSendAmountField" style="display:none;">
+                    <label for="nftSendAmount">Amount</label>
+                    <div class="amount-input-wrapper">
+                        <input type="number" id="nftSendAmount" placeholder="1" min="1" step="1" value="1" />
+                        <button class="max-btn" id="nftSendMaxBtn">MAX</button>
+                    </div>
+                </div>
+
+                <div class="modal-consent">
+                    <input type="checkbox" id="nftSendConsent" />
+                    <label for="nftSendConsent">I confirm that the recipient address is correct. NFT transactions cannot
+                        be reversed.</label>
+                </div>
+                <div class="modal-error" id="nftSendError" style="display:none;"></div>
+                <button class="modal-submit" id="nftSendSubmitBtn" disabled>Send NFT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wallet Detail Modal -->
+    <div class="modal-overlay" id="walletDetailOverlay">
+        <div class="modal modal-lg" id="walletDetailModal">
+            <div class="modal-header">
+                <div>
+                    <h3>Wallet Detail</h3>
+                    <span class="modal-subtitle" id="detailAddressShort">0x...</span>
+                </div>
+                <button class="modal-close" id="walletDetailClose">✕</button>
+            </div>
+            <div class="modal-body detail-modal-body">
+                <div class="detail-header-card">
+                    <div class="detail-balances-wrapper" style="display: flex; flex-wrap: wrap; gap: 24px;">
+                        <div class="detail-balance-section">
+                            <span class="detail-label">Total Balance</span>
+                            <div class="detail-balance-row">
+                                <span class="detail-amount" id="detailBalance">—</span>
+                                <span class="detail-symbol">STT</span>
+                            </div>
+                        </div>
+                        <div class="detail-balance-section"
+                            style="border-left: 1px solid var(--border-color); padding-left: 24px;">
+                            <span class="detail-label">Staked</span>
+                            <div class="detail-balance-row">
+                                <span class="detail-amount" id="detailStakedAmount">—</span>
+                                <span class="detail-symbol">STT</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detail-addr-section">
+                        <span class="detail-address-full" id="detailAddressFull">0x...</span>
+                        <a href="#" id="detailExplorerLink" target="_blank" class="detail-explorer-btn">
+                            View on Explorer
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                <polyline points="15 3 21 3 21 9" />
+                                <line x1="10" y1="14" x2="21" y2="3" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="detail-nfts-section">
+                    <div class="detail-section-header">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <h4>NFT Holdings</h4>
+                            <span class="detail-count" id="detailNftCount">Fetching...</span>
+                        </div>
+                        <div class="nft-search-wrapper">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <input type="text" id="detailNftSearch" placeholder="Search NFTs..."
+                                class="nft-search-input" autocomplete="off" />
+                        </div>
+                    </div>
+                    <div class="nft-grid detail-nft-grid" id="detailNftGrid">
+                        <!-- NFTs will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Warning -->
+    <footer class="footer-warning" id="footerContainer">
+        <div class="warning-content">
+            <span class="warning-icon">⚠️</span>
+            <p>This dashboard is currently in <strong>testing phase</strong>. Kindly test it with a <strong>testnet
+                    wallet only</strong>. Do not use your main wallet.</p>
+        </div>
+        <div class="somi-typing-container">
+            <div class="somi-typing">SOMI TO THE MOON</div>
+        </div>
+        <!-- Obfuscated Watermark -->
+        <script>
+            (function () { var d = document; var w = d.createElement(atob("ZGl2")); w.className = atob("d2F0ZXJtYXJr"); var s1 = d.createElement(atob("c3Bhbg==")); s1.innerHTML = atob("QnVpbHQgYnkgPGEgaHJlZj0iaHR0cHM6Ly94LmNvbS9SaWRobzYyNSIgdGFyZ2V0PSJfYmxhbmsiPkpicmFuLnNvbWk8L2E+"); var s2 = d.createElement(atob("c3Bhbg==")); s2.innerHTML = atob("UG93ZXJlZCBieSA8YSBocmVmPSJodHRwczovL3NvbW5pYS5uZXR3b3JrIiB0YXJnZXQ9Il9ibGFuayI+U29tbmlhIE5ldHdvcms8L2E+"); w.appendChild(s1); w.appendChild(d.createTextNode(" | ")); w.appendChild(s2); d.getElementById(atob("Zm9vdGVyQ29udGFpbmVy")).appendChild(w); })();
+        </script>
+    </footer>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Minigame Tic Tac Toe Modal -->
+    <div class="modal-overlay" id="tictactoeModalOverlay">
+        <div class="modal modal-lg" id="tictactoeModal">
+            <div class="modal-header">
+                <h3>Tic Tac Toe (PvP)</h3>
+                <button class="modal-close" id="tictactoeModalClose">✕</button>
+            </div>
+            <div class="modal-body tictactoe-body">
+
+                <!-- Game Lobby View -->
+                <div id="tttLobbyView">
+                    <div class="ttt-header-actions"
+                        style="display:flex; gap:12px; align-items:flex-end; margin-bottom: 24px;">
+                        <div class="modal-field" style="margin-bottom:0; flex:1;">
+                            <label for="tttWager">Wager Amount (STT)</label>
+                            <input type="number" id="tttWager" placeholder="0.1" step="0.01" min="0.01" value="0.1" />
+                        </div>
+                        <button class="modal-submit" id="tttCreateBtn" style="width:auto; padding: 14px 24px;">Create
+                            Room</button>
+                        <button class="refresh-btn" id="tttRefreshBtn" title="Refresh Rooms">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="23 4 23 10 17 10" />
+                                <polyline points="1 20 1 14 7 14" />
+                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <h4 style="margin-bottom:12px;">Open Rooms</h4>
+                    <div class="ttt-rooms-list" id="tttRoomsList">
+                        <!-- Room list will be injected here -->
+                        <div class="ttt-empty"
+                            style="padding:40px; text-align:center; color:var(--text-muted); background:var(--bg-glass); border-radius:var(--radius-md);">
+                            No active rooms found. Create one!</div>
+                    </div>
+                </div>
+
+                <!-- Active Game View -->
+                <div id="tttActiveView" style="display: none;">
+                    <div class="ttt-game-header"
+                        style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; padding:16px; background:var(--bg-glass); border-radius:var(--radius-md);">
+                        <div class="ttt-players" style="display:flex; flex-direction:column; gap:8px;">
+                            <div class="ttt-player" id="tttPlayerX"
+                                style="font-weight:bold; color:var(--accent-purple);">X: <span class="addr"
+                                    style="font-family:var(--font-mono);font-weight:normal;color:var(--text-primary);">...</span>
+                            </div>
+                            <div class="ttt-player" id="tttPlayerO" style="font-weight:bold; color:var(--accent-blue);">
+                                O: <span class="addr"
+                                    style="font-family:var(--font-mono);font-weight:normal;color:var(--text-primary);">...</span>
+                            </div>
+                        </div>
+                        <div class="ttt-status" id="tttStatusText"
+                            style="font-size:1.2rem; font-weight:bold; text-align:center;">Waiting for opponent...</div>
+                        <div class="ttt-prize" id="tttPrizePool"
+                            style="font-size:1.1rem; color:var(--accent-green); font-weight:bold;">Pool: 0.2 STT</div>
+                    </div>
+
+                    <div class="ttt-board" id="tttBoard"
+                        style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; max-width:300px; margin:0 auto;">
+                        <div class="ttt-cell" data-index="0"></div>
+                        <div class="ttt-cell" data-index="1"></div>
+                        <div class="ttt-cell" data-index="2"></div>
+                        <div class="ttt-cell" data-index="3"></div>
+                        <div class="ttt-cell" data-index="4"></div>
+                        <div class="ttt-cell" data-index="5"></div>
+                        <div class="ttt-cell" data-index="6"></div>
+                        <div class="ttt-cell" data-index="7"></div>
+                        <div class="ttt-cell" data-index="8"></div>
+                    </div>
+
+                    <div
+                        style="display:flex; justify-content:center; align-items:center; flex-direction:column; gap:12px; margin-top:24px;">
+                        <div id="tttMoveSpinner" style="display:none; color:var(--accent-purple); font-size:0.9rem;">
+                            Confirming transaction...</div>
+                        <button class="action-btn action-send" id="tttShareBtn"
+                            style="width:100%;justify-content:center;margin-bottom:8px;display:none;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="18" cy="5" r="3" />
+                                <circle cx="6" cy="12" r="3" />
+                                <circle cx="18" cy="19" r="3" />
+                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                            </svg>
+                            Share Invite Link
+                        </button>
+                        <button class="action-btn" id="tttLeaveBtn" style="width:100%;justify-content:center;">Back to
+                            Lobby</button>
+                        <button class="action-btn action-receive" id="tttContinueBtn"
+                            style="width:100%;justify-content:center;display:none;">Play Again (Same Wager)</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
