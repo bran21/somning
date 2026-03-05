@@ -66,8 +66,8 @@ Kindly test and interact with the application using a testnet wallet only. Do no
 - Built by Jbran.somi (https://x.com/Ridho625)
 - Powered by Somnia Network (https://somnia.network/)
 
-
-
+note : if you want to play tictactoe , dont logout from the game room while waiting another fren to join . because its till buggy.
+but the game works anyway :D
 
 pls dont copy my work but you can use it as an inspiration .... hehe :p
 
